@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Bugger all!</title>
+    <meta charset="utf-8" />
+    <style>
+      form { border-style: solid }
+    </style>
+  </head>
+  <body>
+    <h1>Bugger all!</h1>
+    <input id="client_id" placeholder="client_id" />
+    (<a href="https://github.com/settings/applications/new">get one</a>)
+    <input type="submit" value="Obtain the code and come back here!" onclick="obtain();" />
+    <form method="POST" action="https://github.com/login/oauth/access_token">
+      <input name="client_id" placeholder="client_id" />
+      <input name="client_secret" placeholder="client_secret" />
+      <input name="code" placeholder="code" />
+      <input type="submit" value="Code to token, then back to app!" />
+    </form>
+  </body>
+  <script>
+    function val(id, value) {
+      if(value) {
+       document.getElementById(id).value = value;
+      }
+      return document.getElementById(id).value;
+    }
+    function obtain() {
+      window.location = 'https://github.com/login/oauth/authorize'
+        +'?client_id='+val('client_id')
+        //+'&redirect_uri='+encodeURIComponent(window.location)
+        +'&scope=repo';
+    }
+  </script>
+</html>
