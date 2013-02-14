@@ -30,6 +30,17 @@ remoteStorage.defineModule('sockethub', function(privateClient, publicClient) {
     }
   }
   function connect(setHost, setSecret, setRemoteStorageCredentials) {
+    if(!setRemoteStorageCredentials.bearerToken) {
+      setRemoteStorageCredentials.bearerToken = 'none';
+    }
+    if(!setRemoteStorageCredentials.storageInfo.type) {
+      setRemoteStorageCredentials.storageInfo.type = 'none';
+    }
+    if(!setRemoteStorageCredentials.storageInfo.href) {
+      setRemoteStorageCredentials.storageInfo.href = '/';
+    }
+    console.log(setRemoteStorageCredentials.storageInfo);
+  
     host = setHost;
     sock = new WebSocket('ws://'+host+'/', 'sockethub');
     sock.onopen = function() {

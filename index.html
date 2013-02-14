@@ -4,6 +4,7 @@
     <title>Bugger all!</title>
     <meta charset="utf-8" />
     <style>
+      .column { width: 200px; float: left }
     </style>
   </head>
   <body>
@@ -13,28 +14,79 @@
     <input id="secret" value="123546890" />
     <input type="submit" value="Hit me" onclick="retrieve();" />
 
+    <p>GET /repos/:owner/:repo/issues/:number/comments</p>
 
-GET /repos/:owner/:repo/issues/:number/comments
-
+    <div class="column">
+      <h1>Projects</h1>
+      <ul id="projects">
+      </ul>
+    </div>
+    <div class="column">
+      <h1>Tasks</h1>
+      <ul id="tasks">
+      </ul>
+    </div>
+    <div class="column">
+      <h1>Comments</h1>
+      <ul id="comments">
+      </ul>
+    </div>
   </body>
   <script src="remotestorage.js"></script>
   <script src="sockethub.js"></script>
   <script src="tasks.js"></script>
   <script>
-    function val(id) {
+    function val(id, value) {
+      if(value) {
+       document.getElementById(id).value = value;
+      }
       return document.getElementById(id).value;
+    }
+    function html(id, value) {
+      if(value) {
+       document.getElementById(id).innerHTML = value;
+      }
+      return document.getElementById(id).innerHTML;
     }
     function retrieve() {
       remoteStorage.sockethub.retrieve('github', { token: val('token') });
+    }
+    function displayProjects() {
+      remoteStorage.tasks.getProjects().then(function(list) {
+        var str = '';
+        for(var i=0; i<list.length; i++) {
+          str += '<li onclick="displayTasks(\''+list[i]+'\');" >'+list[i]+'</li>';
+        }
+        html('projects', str);
+      });
+    }
+    function displayTasks(project) {
+      remoteStorage.tasks.getTasks(project).then(function(list) {
+        var str = '';
+        for(var i=0; i<list.length; i++) {
+          str += '<li onclick="displayComments(\''+project+'\', \''+list[i]+'\');" >'+list[i]+'</li>';
+        }
+        html('tasks', str);
+      });
+    }
+    function displayComments(project, task) {
+      remoteStorage.tasks.getComments(project, task).then(function(list) {
+        var str = '';
+        for(var i=0; i<list.length; i++) {
+          str += '<li onclick="displayComments(\''+project+'\', \''+task+'\', \''+list[i]+'\');" >'+list[i]+'</li>';
+        }
+        html('comments', str);
+      });
     }
     remoteStorage.sockethub.setCredentials({ host: val('host'), secret: val('secret') }).then(function() {
       remoteStorage.sockethub.connectNow();
       remoteStorage.sockethub.on('activity', function(activity) {
         for(var i in activity.status) {
           for(var j in activity.status[i]) {
-            remoteStorage.tasks.storeTask(i, j, activity.status[i][j]);
+            remoteStorage.tasks.storeTask('gh:'+i, j+': '+activity.status[i][j].title, activity.status[i][j]);
           }
         }
+        displayProjects(projects);
       });
     });
   </script>

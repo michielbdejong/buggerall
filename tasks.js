@@ -3,8 +3,15 @@
 
   remoteStorage.defineModule(moduleName, function(myPrivateBaseClient, myPublicBaseClient) {
     var storeTask = function(project, id, obj) {
-      return myPrivateBaseClient.storeObject('task', project+'/'+id, obj);
+      return myPrivateBaseClient.storeObject('task', encodeURIComponent(project)+'/'+encodeURIComponent(id), obj);
+    }, getProjects = function() {
+      return myPrivateBaseClient.getListing('');
+    }, getTasks = function(project) {
+      return myPrivateBaseClient.getListing(project+'/');
+    }, getComments = function(project, task) {
+      return myPrivateBaseClient.getListing(project+'/'+task+'/');
     };
+    
     // Namespace: remoteStorage.tasks
     //
     // tasks are things that need doing; items on your todo list
@@ -244,7 +251,10 @@
         },
         exports: {
             getPrivateList: getPrivateList,
-            storeTask: storeTask
+            storeTask: storeTask,
+            getProjects: getProjects,
+            getTasks: getTasks,
+            getComments: getComments
         }
     };
   });
