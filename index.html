@@ -8,13 +8,34 @@
   </head>
   <body>
     <h1>Bugger all!</h1>
+    <input id="token" />
+    <input id="host" value="localhost:10550" />
+    <input id="secret" value="123546890" />
+    <input type="submit" value="Hit me" onclick="retrieve();" />
+
+
+GET /repos/:owner/:repo/issues/:number/comments
+
   </body>
   <script src="remotestorage.js"></script>
-  <script src="remotestorage.sockethub.js"></script>
-  <script src="remotestorage.tasks.js"></script>
+  <script src="sockethub.js"></script>
+  <script src="tasks.js"></script>
   <script>
-    remoteStorage.sockethub.retrieve({
-      platform: 'github'
+    function val(id) {
+      return document.getElementById(id).value;
+    }
+    function retrieve() {
+      remoteStorage.sockethub.retrieve('github', { token: val('token') });
+    }
+    remoteStorage.sockethub.setCredentials({ host: val('host'), secret: val('secret') }).then(function() {
+      remoteStorage.sockethub.connectNow();
+      remoteStorage.sockethub.on('activity', function(activity) {
+        for(var i in activity.status) {
+          for(var j in activity.status[i]) {
+            remoteStorage.tasks.storeTask(i, j, activity.status[i][j]);
+          }
+        }
+      });
     });
   </script>
 </html>
