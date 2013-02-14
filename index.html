@@ -19,6 +19,8 @@
 
     <div class="column">
       <h1>Projects</h1>
+      <input id="addproj" />
+      <input type="submit" value="Add" onclick="addProject();" />
       <ul id="projects">
       </ul>
     </div>
@@ -90,5 +92,11 @@
         displayProjects(projects);
       });
     });
+    function addProject() {
+      remoteStorage.sockethub.create('github', {
+        type: 'project',
+        name: val('addproj')
+      }, { token: val('token') });
+    }
   </script>
 </html>

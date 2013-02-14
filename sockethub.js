@@ -102,6 +102,15 @@ remoteStorage.defineModule('sockethub', function(privateClient, publicClient) {
       target: activity.target
     });
   }
+  function create(platform, object, credentials) {
+    credentials.tls = true;
+    sendActivity({
+      platform: platform,
+      credentials: credentials,
+      verb: 'create',
+      object: object
+    });
+  }
   function retrieve(platform, credentials) {
     credentials.tls = true;
     sendActivity({
@@ -131,6 +140,7 @@ remoteStorage.defineModule('sockethub', function(privateClient, publicClient) {
       post: post,
       send: send,
       retrieve: retrieve,
+      create: create,
       getState: function() {
         return sock.readyState;
       },
