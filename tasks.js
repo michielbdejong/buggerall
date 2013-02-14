@@ -5,11 +5,29 @@
     var storeTask = function(project, id, obj) {
       return myPrivateBaseClient.storeObject('task', encodeURIComponent(project)+'/'+encodeURIComponent(id), obj);
     }, getProjects = function() {
-      return myPrivateBaseClient.getListing('');
+      return myPrivateBaseClient.getListing('').then(function(list) {
+        for(var i=0; i<list.length; i++) {
+          list[i] = decodeURIComponent(list[i]);
+          list[i] = list[i].substring(0, list[i].length-1);
+        }
+        return list;
+      });
     }, getTasks = function(project) {
-      return myPrivateBaseClient.getListing(project+'/');
+      console.log(project);
+      return myPrivateBaseClient.getListing(encodeURIComponent(project)+'/').then(function(list) {
+        for(var i=0; i<list.length; i++) {
+          list[i] = decodeURIComponent(list[i]);
+        }
+        return list;
+      });
     }, getComments = function(project, task) {
-      return myPrivateBaseClient.getListing(project+'/'+task+'/');
+      console.log(project, task);
+      return myPrivateBaseClient.getListing(encodeURIComponent(project)+'/'+encodeURIComponent(task)+'/').then(function(list) {
+        for(var i=0; i<list.length; i++) {
+          list[i] = decodeURIComponent(list[i]);
+        }
+        return list;
+      });
     };
     
     // Namespace: remoteStorage.tasks
